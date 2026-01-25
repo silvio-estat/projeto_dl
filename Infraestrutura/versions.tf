@@ -13,6 +13,10 @@ terraform {
       source = "hashicorp/time"
       version = "0.9.1"
     }
+    airbyte = {
+      source  = "airbytehq/airbyte"
+      version = "0.13.0" # Versão estável recente
+    }
   }
 }
 
