@@ -1,4 +1,7 @@
-# --- FONTE (SOURCE): POSTGRESQL ---
+# --- FONTE (SOURCE): 
+
+
+#POSTGRESQL --- SOMENTE PARA TESTES LOCAIS ---
 
 resource "airbyte_source_postgres" "postgres_source" {
   configuration = {
