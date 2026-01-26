@@ -10,7 +10,7 @@ terraform {
     }
     # --- NOVO BLOCO AQUI ---
     time = {
-      source = "hashicorp/time"
+      source  = "hashicorp/time"
       version = "0.9.1"
     }
     airbyte = {
@@ -18,15 +18,4 @@ terraform {
       version = "0.13.0" # Versão estável recente
     }
   }
-}
-
-provider "docker" {
-  host = "unix:///var/run/docker.sock"
-}
-
-provider "minio" {
-  minio_server   = "localhost:9000"
-  minio_user     = var.minio_user
-  minio_password = var.minio_password
-  minio_ssl      = false
 }

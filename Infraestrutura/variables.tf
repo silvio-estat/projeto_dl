@@ -42,18 +42,18 @@ variable "postgres_password" {
 variable "client_id" {
   description = "Usuário do Airbyte (Client ID)"
   type        = string
-  default = "89456f3d-bc7e-4e6d-bc73-c61d25a9531c"
+  default     = "a401499b-1f0a-4474-9700-7ce1b8365a03"
 }
 
 variable "client_secret" {
   description = "Senha do Airbyte (Client Secret)"
   type        = string
   sensitive   = true
-  default = "61qmHCZO1zmu5O1ucWHKuUUN1h11AbPs"
+  default     = "rzA8qPteTDMwvy0eFU2CIziTo3OZqpwc"
 }
 
 variable "workspace_id" {
   description = "ID do Workspace do Airbyte (pegue na URL)"
   type        = string
-  default = "e852573b-b429-4217-819d-2915f52c83e1"
+  default     = "a1e0fa54-4503-45b8-9ada-d6edb7996ae5"
 }

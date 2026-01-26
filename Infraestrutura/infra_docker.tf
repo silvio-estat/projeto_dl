@@ -1,3 +1,17 @@
+
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
+
+provider "minio" {
+  minio_server   = "localhost:9000"
+  minio_user     = var.minio_user
+  minio_password = var.minio_password
+  minio_ssl      = false
+}
+
+
+
 # 1. A Rede "Ilha"
 resource "docker_network" "data_network" {
   name   = "datalake_network"
@@ -118,16 +132,4 @@ resource "docker_container" "postgres" {
     volume_name    = docker_volume.pg_data.name
     container_path = "/var/lib/postgresql/data"
   }
-}
-
-# --- CONFIGURAÇÃO DO AIRBYTE ---
-
-provider "airbyte" {
-  # URL base da API
-  server_url = "http://localhost:8000/api/public/v1"
-
-  # Autenticação Moderna (Client Credentials)
-  # Pegamos estes valores do seu comando 'abctl local credentials'
-  client_id     = var.client_id
-  client_secret = var.client_secret
 }
