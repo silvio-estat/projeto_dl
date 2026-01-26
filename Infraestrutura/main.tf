@@ -124,10 +124,10 @@ resource "docker_container" "postgres" {
 
 provider "airbyte" {
   # URL base da API
-  server_url = "http://localhost:8000/api/v1"
+  server_url = "http://localhost:8000/api/public/v1"
 
   # Autenticação Moderna (Client Credentials)
   # Pegamos estes valores do seu comando 'abctl local credentials'
-  client_id     = "a401499b-1f0a-4474-9700-7ce1b8365a03"
-  client_secret = "rzA8qPteTDMwvy0eFU2CIziTo3OZqpwc"
+  client_id     = var.client_id
+  client_secret = var.client_secret
 }

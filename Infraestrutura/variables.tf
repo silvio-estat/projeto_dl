@@ -39,18 +39,21 @@ variable "postgres_password" {
 ## CREDENCIAIS Airbyte
 ###############################
 
-variable "airbyte_username" {
+variable "client_id" {
   description = "Usuário do Airbyte (Client ID)"
   type        = string
+  default = "89456f3d-bc7e-4e6d-bc73-c61d25a9531c"
 }
 
-variable "airbyte_password" {
+variable "client_secret" {
   description = "Senha do Airbyte (Client Secret)"
   type        = string
   sensitive   = true
+  default = "61qmHCZO1zmu5O1ucWHKuUUN1h11AbPs"
 }
 
-variable "airbyte_workspace_id" {
+variable "workspace_id" {
   description = "ID do Workspace do Airbyte (pegue na URL)"
   type        = string
+  default = "e852573b-b429-4217-819d-2915f52c83e1"
 }
