@@ -9,7 +9,7 @@ resource "airbyte_source_postgres" "postgres_source" {
     # muitas vezes usamos o IP da interface docker0 (geralmente 172.17.0.1)
     # ou tentamos host.docker.internal se o abctl configurou.
     host     = "172.17.0.1"
-    port     = 5432
+    port     = 5433
     database = "app_db"
     username = var.postgres_user
     password = var.postgres_password
