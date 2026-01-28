@@ -117,7 +117,7 @@ resource "docker_container" "postgres" {
   # Porta: Interna 5432 (padrão), Externa 5432 (para você acessar do DBeaver/Notebook)
   ports {
     internal = 5432
-    external = 5432
+    external = 5433
   }
 
   # Credenciais (Puxando das variáveis que vamos criar)
