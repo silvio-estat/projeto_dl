@@ -1,0 +1,17 @@
+[project]
+name = "orquestracao"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "apache-airflow-providers-postgres>=6.5.2",
+    "pandas>=3.0.0",
+]
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "apache-airflow>=3.1.6",
+]
