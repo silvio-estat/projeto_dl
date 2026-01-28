@@ -1,3 +1,6 @@
 apache-airflow-providers-postgres
+apache-airflow-providers-amazon
 pandas
 psycopg2-binary
+docling
+astro-run-dag # This package is needed for the astro run command. It will be removed before a deploy

@@ -5,8 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "apache-airflow-providers-amazon>=9.20.0",
     "apache-airflow-providers-postgres>=6.5.2",
-    "pandas>=3.0.0",
+    "docling>=2.70.0",
+    "pandas<3.0.0",
 ]
 [tool.uv]
 package = false
