@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from airflow.sdk import dag, task
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
+
 # --- CONFIGURAÇÕES ---
 # Nome da conexão que criaremos na UI do Airflow (Passo final)
 CONN_ID = "minio_local"
@@ -63,7 +64,8 @@ def pipeline_pdf_md():
         """
         Recebe o nome de um arquivo PDF, baixa, converte e sobe o MD.
         """
-        from docling.document_converter import DocumentConverter
+        from docling.document_converter import DocumentConverter, PdfFormatOption
+        from docling.datamodel.pipeline_options import PdfPipelineOptions
         from docling.datamodel.base_models import InputFormat
         
         hook = S3Hook(aws_conn_id=CONN_ID)

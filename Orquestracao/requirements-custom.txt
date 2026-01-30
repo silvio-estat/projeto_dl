@@ -1,0 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Instale o torch versão CPU explicitamente antes
+
+#torch
+#torchvision
+
+# Outras dependências
+apache-airflow-providers-postgres
+apache-airflow-providers-amazon
+pandas
+psycopg2-binary
+#docling
+astro-run-dag
