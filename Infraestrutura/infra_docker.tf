@@ -1,7 +1,22 @@
 
+#############################################
+###### CONFIGURANDO O PROVIDER DO DOCKER
+############################################
+
 provider "docker" {
   host = "unix:///var/run/docker.sock"
+
 }
+
+# 1. A Rede "Ilha"
+resource "docker_network" "data_network" {
+  name   = "datalake_network"
+  driver = "bridge"
+}
+
+#############################################
+###### CONFIGURANDO O PROVIDER DO MINIO
+############################################
 
 provider "minio" {
   minio_server   = "localhost:9000"
@@ -10,13 +25,6 @@ provider "minio" {
   minio_ssl      = false
 }
 
-
-
-# 1. A Rede "Ilha"
-resource "docker_network" "data_network" {
-  name   = "datalake_network"
-  driver = "bridge"
-}
 
 # 2. Imagem do MinIO
 resource "docker_image" "minio" {
@@ -65,8 +73,16 @@ resource "docker_container" "minio" {
 
 # 5. O Timer de Espera (Mantivemos para segurança)
 resource "time_sleep" "wait_for_minio" {
-  depends_on      = [docker_container.minio]
-  create_duration = "10s"
+  create_duration = "30s" # 30s costuma ser suficiente
+
+  # O segredo é este bloco triggers:
+  triggers = {
+    # Se o ID do container mudar, este recurso será destruído e recriado,
+    # forçando a espera de 30s novamente.
+    minio_container_id = docker_container.minio.id
+  }
+
+  depends_on = [docker_container.minio]
 }
 
 # 6. Criação dos Buckets
@@ -133,3 +149,4 @@ resource "docker_container" "postgres" {
     container_path = "/var/lib/postgresql/data"
   }
 }
+

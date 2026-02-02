@@ -1,0 +1,689 @@
+{
+  "version": 4,
+  "terraform_version": "1.14.3",
+  "serial": 22,
+  "lineage": "00d6d571-dc94-2077-4d6e-aa8623979002",
+  "outputs": {
+    "minio_container_name": {
+      "value": "minio_server",
+      "type": "string"
+    },
+    "minio_endpoint": {
+      "value": "http://minio_server:9000",
+      "type": "string"
+    },
+    "network_name": {
+      "value": "datalake_network",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "airbyte_connection",
+      "name": "postgres_to_minio_bronze",
+      "provider": "provider[\"registry.terraform.io/airbytehq/airbyte\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "configurations": {
+              "streams": []
+            },
+            "connection_id": "e3bedaea-5cf2-4029-b2d5-b40613e9410f",
+            "created_at": 1769524006,
+            "data_residency": null,
+            "destination_id": "02abc217-ed20-460f-aec6-dfc2ab76a86d",
+            "name": "Sync: Postgres -\u003e MinIO (Bronze)",
+            "namespace_definition": "source",
+            "namespace_format": null,
+            "non_breaking_schema_updates_behavior": "ignore",
+            "prefix": "",
+            "schedule": {
+              "basic_timing": null,
+              "cron_expression": null,
+              "schedule_type": "manual"
+            },
+            "source_id": "4514bf73-0ccf-42a9-9b3a-f47a31495a6e",
+            "status": "active",
+            "tags": [],
+            "workspace_id": "e852573b-b429-4217-819d-2915f52c83e1"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "dependencies": [
+            "airbyte_destination_custom.minio_bronze",
+            "airbyte_source_postgres.postgres_source"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "airbyte_destination_custom",
+      "name": "minio_bronze",
+      "provider": "provider[\"registry.terraform.io/airbytehq/airbyte\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "configuration": "{\"access_key_id\":\"minioadmin\",\"destination_type\":\"S3\",\"format\":{\"compression_codec\":\"GZIP\",\"flattening\":\"Root level flattening\",\"format_type\":\"JSONL\"},\"s3_bucket_name\":\"bronze\",\"s3_bucket_path\":\"${NAMESPACE}/${STREAM_NAME}/${YEAR}_${MONTH}_${DAY}_${EPOCH}_\",\"s3_bucket_region\":\"us-east-1\",\"s3_endpoint\":\"http://minio_server:9000\",\"secret_access_key\":\"minioadmin\"}",
+            "created_at": 1769523985,
+            "definition_id": "4816b78f-1489-44c1-9060-4b19d5fa9362",
+            "destination_id": "02abc217-ed20-460f-aec6-dfc2ab76a86d",
+            "destination_type": "s3",
+            "name": "MinIO - Camada Bronze",
+            "resource_allocation": null,
+            "workspace_id": "e852573b-b429-4217-819d-2915f52c83e1"
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "configuration"
+              }
+            ]
+          ],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "airbyte_source_postgres",
+      "name": "postgres_source",
+      "provider": "provider[\"registry.terraform.io/airbytehq/airbyte\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "configuration": {
+              "database": "app_db",
+              "host": "172.17.0.1",
+              "jdbc_url_params": null,
+              "password": "postgres",
+              "port": 5433,
+              "replication_method": {
+                "detect_changes_with_xmin_system_column": null,
+                "read_changes_using_write_ahead_log_cdc": null,
+                "scan_changes_with_user_defined_cursor": null
+              },
+              "schemas": null,
+              "ssl_mode": {
+                "allow": null,
+                "disable": {
+                  "additional_properties": null
+                },
+                "prefer": null,
+                "require": null,
+                "verify_ca": null,
+                "verify_full": null
+              },
+              "tunnel_method": null,
+              "username": "postgres"
+            },
+            "created_at": 1769523985,
+            "definition_id": "decd338e-5647-4c0b-adf4-da0e75f5a750",
+            "name": "Postgres - Produção",
+            "resource_allocation": null,
+            "secret_id": null,
+            "source_id": "4514bf73-0ccf-42a9-9b3a-f47a31495a6e",
+            "source_type": "postgres",
+            "workspace_id": "e852573b-b429-4217-819d-2915f52c83e1"
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "configuration"
+              },
+              {
+                "type": "get_attr",
+                "value": "password"
+              }
+            ]
+          ],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_container",
+      "name": "minio",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "attach": false,
+            "bridge": "",
+            "capabilities": [],
+            "cgroupns_mode": null,
+            "command": [
+              "server",
+              "/data",
+              "--console-address",
+              ":9001"
+            ],
+            "container_logs": null,
+            "container_read_refresh_timeout_milliseconds": 15000,
+            "cpu_set": "",
+            "cpu_shares": 0,
+            "destroy_grace_seconds": null,
+            "devices": [],
+            "dns": null,
+            "dns_opts": null,
+            "dns_search": null,
+            "domainname": "",
+            "entrypoint": [
+              "/usr/bin/docker-entrypoint.sh"
+            ],
+            "env": [
+              "MINIO_ROOT_PASSWORD=minioadmin",
+              "MINIO_ROOT_USER=minioadmin"
+            ],
+            "exit_code": null,
+            "gpus": null,
+            "group_add": null,
+            "healthcheck": null,
+            "host": [],
+            "hostname": "f7a5ede04a1a",
+            "id": "f7a5ede04a1a1d9f43375ca0fea1605e4312a9a1ab4a385ebc7c2670b3c10fa2",
+            "image": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+            "init": false,
+            "ipc_mode": "private",
+            "labels": [],
+            "log_driver": "json-file",
+            "log_opts": null,
+            "logs": false,
+            "max_retry_count": 0,
+            "memory": 0,
+            "memory_swap": 0,
+            "mounts": [],
+            "must_run": true,
+            "name": "minio_server",
+            "network_data": [
+              {
+                "gateway": "172.18.0.1",
+                "global_ipv6_address": "",
+                "global_ipv6_prefix_length": 0,
+                "ip_address": "172.18.0.3",
+                "ip_prefix_length": 16,
+                "ipv6_gateway": "",
+                "mac_address": "72:a6:c6:98:1d:b9",
+                "network_name": "datalake_network"
+              }
+            ],
+            "network_mode": "bridge",
+            "networks_advanced": [
+              {
+                "aliases": [],
+                "ipv4_address": "",
+                "ipv6_address": "",
+                "name": "datalake_network"
+              }
+            ],
+            "pid_mode": "",
+            "ports": [
+              {
+                "external": 9000,
+                "internal": 9000,
+                "ip": "0.0.0.0",
+                "protocol": "tcp"
+              },
+              {
+                "external": 9001,
+                "internal": 9001,
+                "ip": "0.0.0.0",
+                "protocol": "tcp"
+              }
+            ],
+            "privileged": false,
+            "publish_all_ports": false,
+            "read_only": false,
+            "remove_volumes": true,
+            "restart": "unless-stopped",
+            "rm": false,
+            "runtime": "runc",
+            "security_opts": [],
+            "shm_size": 64,
+            "start": true,
+            "stdin_open": false,
+            "stop_signal": "",
+            "stop_timeout": 0,
+            "storage_opts": null,
+            "sysctls": null,
+            "tmpfs": null,
+            "tty": false,
+            "ulimit": [],
+            "upload": [],
+            "user": "",
+            "userns_mode": "",
+            "volumes": [
+              {
+                "container_path": "/data",
+                "from_container": "",
+                "host_path": "",
+                "read_only": null,
+                "volume_name": "minio_data_vol"
+              }
+            ],
+            "wait": false,
+            "wait_timeout": 60,
+            "working_dir": "/"
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "env"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjIifQ==",
+          "dependencies": [
+            "docker_image.minio",
+            "docker_network.data_network",
+            "docker_volume.minio_storage"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_container",
+      "name": "postgres",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "attach": false,
+            "bridge": "",
+            "capabilities": [],
+            "cgroupns_mode": null,
+            "command": [
+              "postgres"
+            ],
+            "container_logs": null,
+            "container_read_refresh_timeout_milliseconds": 15000,
+            "cpu_set": "",
+            "cpu_shares": 0,
+            "destroy_grace_seconds": null,
+            "devices": [],
+            "dns": null,
+            "dns_opts": null,
+            "dns_search": null,
+            "domainname": "",
+            "entrypoint": [
+              "docker-entrypoint.sh"
+            ],
+            "env": [
+              "POSTGRES_DB=app_db",
+              "POSTGRES_PASSWORD=postgres",
+              "POSTGRES_USER=postgres"
+            ],
+            "exit_code": null,
+            "gpus": null,
+            "group_add": null,
+            "healthcheck": null,
+            "host": [],
+            "hostname": "45f1cfbb39ea",
+            "id": "45f1cfbb39ea5f1ac0f5d709e1cabe4d929c4a652b72c62f71aa955fea11d12d",
+            "image": "sha256:264e9dea325c61b96546c4065848e3ecaa85333b750506f783eced0a1830e37e",
+            "init": false,
+            "ipc_mode": "private",
+            "labels": [],
+            "log_driver": "json-file",
+            "log_opts": null,
+            "logs": false,
+            "max_retry_count": 0,
+            "memory": 0,
+            "memory_swap": 0,
+            "mounts": [],
+            "must_run": true,
+            "name": "postgres_db",
+            "network_data": [
+              {
+                "gateway": "172.18.0.1",
+                "global_ipv6_address": "",
+                "global_ipv6_prefix_length": 0,
+                "ip_address": "172.18.0.2",
+                "ip_prefix_length": 16,
+                "ipv6_gateway": "",
+                "mac_address": "2e:c4:fe:2a:31:3b",
+                "network_name": "datalake_network"
+              }
+            ],
+            "network_mode": "bridge",
+            "networks_advanced": [
+              {
+                "aliases": [],
+                "ipv4_address": "",
+                "ipv6_address": "",
+                "name": "datalake_network"
+              }
+            ],
+            "pid_mode": "",
+            "ports": [
+              {
+                "external": 5432,
+                "internal": 5432,
+                "ip": "0.0.0.0",
+                "protocol": "tcp"
+              }
+            ],
+            "privileged": false,
+            "publish_all_ports": false,
+            "read_only": false,
+            "remove_volumes": true,
+            "restart": "unless-stopped",
+            "rm": false,
+            "runtime": "runc",
+            "security_opts": [],
+            "shm_size": 64,
+            "start": true,
+            "stdin_open": false,
+            "stop_signal": "SIGINT",
+            "stop_timeout": 0,
+            "storage_opts": null,
+            "sysctls": null,
+            "tmpfs": null,
+            "tty": false,
+            "ulimit": [],
+            "upload": [],
+            "user": "",
+            "userns_mode": "",
+            "volumes": [
+              {
+                "container_path": "/var/lib/postgresql/data",
+                "from_container": "",
+                "host_path": "",
+                "read_only": null,
+                "volume_name": "postgres_data_vol"
+              }
+            ],
+            "wait": false,
+            "wait_timeout": 60,
+            "working_dir": ""
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "env"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjIifQ==",
+          "dependencies": [
+            "docker_image.postgres",
+            "docker_network.data_network",
+            "docker_volume.pg_data"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_image",
+      "name": "minio",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "build": [],
+            "force_remove": null,
+            "id": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9minio/minio:latest",
+            "image_id": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+            "keep_locally": true,
+            "name": "minio/minio:latest",
+            "platform": null,
+            "pull_triggers": null,
+            "repo_digest": "minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+            "triggers": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_image",
+      "name": "postgres",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "build": [],
+            "force_remove": null,
+            "id": "sha256:264e9dea325c61b96546c4065848e3ecaa85333b750506f783eced0a1830e37epostgres:13",
+            "image_id": "sha256:264e9dea325c61b96546c4065848e3ecaa85333b750506f783eced0a1830e37e",
+            "keep_locally": true,
+            "name": "postgres:13",
+            "platform": null,
+            "pull_triggers": null,
+            "repo_digest": "postgres@sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068",
+            "triggers": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_network",
+      "name": "data_network",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "attachable": false,
+            "check_duplicate": null,
+            "driver": "bridge",
+            "id": "8cfaeed6bafcc905f04fe4df80bd916a7eb984f8173fd663f5393afbf30b97ee",
+            "ingress": false,
+            "internal": false,
+            "ipam_config": [
+              {
+                "aux_address": {},
+                "gateway": "172.18.0.1",
+                "ip_range": "",
+                "subnet": "172.18.0.0/16"
+              }
+            ],
+            "ipam_driver": "default",
+            "ipam_options": {},
+            "ipv6": false,
+            "labels": [],
+            "name": "datalake_network",
+            "options": {},
+            "scope": "local"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_volume",
+      "name": "minio_storage",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "driver": "local",
+            "driver_opts": {},
+            "id": "minio_data_vol",
+            "labels": [],
+            "mountpoint": "/var/lib/docker/volumes/minio_data_vol/_data",
+            "name": "minio_data_vol"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_volume",
+      "name": "pg_data",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "driver": "local",
+            "driver_opts": {},
+            "id": "postgres_data_vol",
+            "labels": [],
+            "mountpoint": "/var/lib/docker/volumes/postgres_data_vol/_data",
+            "name": "postgres_data_vol"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "minio_s3_bucket",
+      "name": "bronze",
+      "provider": "provider[\"registry.terraform.io/aminueza/minio\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl": "private",
+            "arn": "arn:aws:s3:::bronze",
+            "bucket": "bronze",
+            "bucket_domain_name": "http://localhost:9000/bronze",
+            "bucket_prefix": null,
+            "force_destroy": false,
+            "id": "bronze",
+            "object_locking": false,
+            "quota": null,
+            "tags": {}
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "docker_container.minio",
+            "docker_image.minio",
+            "docker_network.data_network",
+            "docker_volume.minio_storage",
+            "time_sleep.wait_for_minio"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "minio_s3_bucket",
+      "name": "ouro",
+      "provider": "provider[\"registry.terraform.io/aminueza/minio\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl": "private",
+            "arn": "arn:aws:s3:::ouro",
+            "bucket": "ouro",
+            "bucket_domain_name": "http://localhost:9000/ouro",
+            "bucket_prefix": null,
+            "force_destroy": false,
+            "id": "ouro",
+            "object_locking": false,
+            "quota": null,
+            "tags": {}
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "docker_container.minio",
+            "docker_image.minio",
+            "docker_network.data_network",
+            "docker_volume.minio_storage",
+            "time_sleep.wait_for_minio"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "minio_s3_bucket",
+      "name": "prata",
+      "provider": "provider[\"registry.terraform.io/aminueza/minio\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl": "private",
+            "arn": "arn:aws:s3:::prata",
+            "bucket": "prata",
+            "bucket_domain_name": "http://localhost:9000/prata",
+            "bucket_prefix": null,
+            "force_destroy": false,
+            "id": "prata",
+            "object_locking": false,
+            "quota": null,
+            "tags": {}
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "docker_container.minio",
+            "docker_image.minio",
+            "docker_network.data_network",
+            "docker_volume.minio_storage",
+            "time_sleep.wait_for_minio"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "time_sleep",
+      "name": "wait_for_minio",
+      "provider": "provider[\"registry.terraform.io/hashicorp/time\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "create_duration": "10s",
+            "destroy_duration": null,
+            "id": "2026-01-27T14:26:40Z",
+            "triggers": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "dependencies": [
+            "docker_container.minio",
+            "docker_image.minio",
+            "docker_network.data_network",
+            "docker_volume.minio_storage"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

@@ -11,7 +11,7 @@ resource "airbyte_connection" "postgres_to_minio_bronze" {
   # Aqui deixei como "manual" para você testar clicando, 
   # mas você pode mudar para "cron" se quiser automático.
   schedule = {
-    schedule_type = "manual" 
+    schedule_type = "manual"
     # Exemplo para rodar a cada 24h:
     # schedule_type = "cron"
     # cron_expression = "0 0 12 * * ?" 
@@ -23,7 +23,7 @@ resource "airbyte_connection" "postgres_to_minio_bronze" {
 
   # 5. Status inicial
   status = "active"
-  
+
   # 6. Modo de Sincronização Padrão (Opcional, mas bom especificar)
   # O Airbyte tentará aplicar "Full Refresh | Overwrite" ou "Incremental | Append"
   # dependendo do que o banco suportar.

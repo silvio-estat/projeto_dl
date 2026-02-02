@@ -12,3 +12,8 @@ output "minio_endpoint" {
   description = "Endpoint interno para outros containers"
   value       = "http://${docker_container.minio.name}:9000"
 }
+
+output "duckdb_container_name" {
+  description = "Nome do container DuckDB para acesso via CLI"
+  value       = docker_container.duckdb_bi.name
+}

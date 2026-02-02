@@ -22,7 +22,7 @@ COPY requirements-custom.txt .
 
 # 4. Instala as demais dependências do seu projeto
 # Otimizamos o cache para que o container suba rápido
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --system --no-cache -r requirements-custom.txt
+RUN uv pip install --system --no-cache -r requirements-custom.txt
+    
 
 USER astro
