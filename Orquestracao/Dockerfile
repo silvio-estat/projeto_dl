@@ -23,6 +23,8 @@ COPY requirements-custom.txt .
 # 4. Instala as demais dependências do seu projeto
 # Otimizamos o cache para que o container suba rápido
 RUN uv pip install --system --no-cache -r requirements-custom.txt
+
+RUN uv pip install --system --no-cache docling torch torchvision
     
 
 USER astro

@@ -1,4 +1,4 @@
-#--extra-index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
 
 # Instale o torch versão CPU explicitamente antes
 
