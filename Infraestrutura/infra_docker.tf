@@ -35,6 +35,10 @@ resource "docker_image" "minio" {
 # 3. O Volume Gerenciado (A "Caixa Preta" segura do Docker)
 resource "docker_volume" "minio_storage" {
   name = "minio_data_vol"
+      # --- TRAVA DE SEGURANÇA ---
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # 4. O Container MinIO
@@ -117,7 +121,14 @@ resource "docker_image" "postgres" {
 # 2. Volume para os dados do banco não sumirem
 resource "docker_volume" "pg_data" {
   name = "postgres_data_vol"
+
+    # --- TRAVA DE SEGURANÇA ---
+  lifecycle {
+    prevent_destroy = true
+  }
 }
+
+
 
 # 3. O Container do Postgres
 resource "docker_container" "postgres" {
