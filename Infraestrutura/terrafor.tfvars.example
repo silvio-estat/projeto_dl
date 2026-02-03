@@ -1,0 +1,12 @@
+# Credenciais do MinIO
+minio_user     = ""
+minio_password = ""
+
+# Credenciais do Postgres
+postgres_user     = ""
+postgres_password = ""
+
+# Credenciais do Airbyte
+client_id     = ""
+client_secret = ""
+workspace_id  = ""

@@ -7,7 +7,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 # --- CONFIGURAÇÕES ---
 # Nome da conexão que criaremos na UI do Airflow (Passo final)
-CONN_ID = "minio_local"
+CONN_ID = "minio_conn"
 BUCKET_ORIGEM = "bronze"
 BUCKET_DESTINO = "prata"
 
