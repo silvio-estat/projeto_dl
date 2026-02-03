@@ -18,8 +18,8 @@ resource "local_file" "bi_server_script" {
 
     # 1. Configurações de Ambiente
     MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "minio_server:9000")
-    MINIO_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
-    MINIO_SECRET = os.getenv("MINIO_SECRET_KEY", "minioadmin")
+    MINIO_KEY = os.getenv("MINIO_ACCESS_KEY", "${var.minio_user}")
+    MINIO_SECRET = os.getenv("MINIO_SECRET_KEY", "${var.minio_password}")
 
     print("--- INICIANDO SERVIDOR DUCKDB PARA BI ---")
     
