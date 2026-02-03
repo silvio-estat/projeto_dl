@@ -9,6 +9,8 @@
 venv/
 env/
 
+
+
 # Ignorar arquivos compilados do Python
 __pycache__/
 *.pyc
@@ -25,6 +27,8 @@ Orquestracao/airflow_settings.yaml
 .terraform/
 *.tfstate
 *.tfstate.backup
+*.tfvars
+*.tfvars.json
 
 # --- IDEs ---
 .vscode/
