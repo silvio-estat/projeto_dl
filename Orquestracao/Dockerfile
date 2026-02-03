@@ -31,24 +31,21 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 #instala "por fora" os pacotes problematicos
 RUN uv pip install --system --no-cache docling torch torchvision
 
-#Define a variável "DOCLING_ARTIFACTS_PATH" PRIMEIRO para que o script Python saiba onde salvar
+## 1. Define a variável PRIMEIRO. Quando o container rodar, o Docling lerá isso
+# e saberá que NÃO precisa tentar baixar nada da internet.
 ENV DOCLING_ARTIFACTS_PATH="/opt/docling_models"
 
-#Cria a pasta para que os modelos possam ser salvos
-RUN mkdir -p /opt/docling_models
+# 2. Copia a pasta física que está no seu projeto para dentro da imagem.
+# O comando COPY cria a pasta de destino automaticamente se ela não existir.
+COPY docling_models /opt/docling_models
 
-# Usa a CLI oficial para baixar os modelos explicitamente para a pasta criada.
-# Isso garante que a estrutura de pastas do RapidOCR/EasyOCR fique correta.
-RUN docling-tools models download -o /opt/docling_models
+# 3. Ajusta as permissões. Como copiamos sendo 'root', os arquivos agora pertencem ao root.
+# Precisamos devolvê-los ao usuário 'astro' para que o Airflow consiga ler/escrever se precisar.
+RUN chown -R astro:astro /opt/docling_models
 
-#Validação rápida para garantir que funcionou
+# (Opcional) Lista os arquivos no log de build para você ter certeza que vieram
 RUN ls -R /opt/docling_models
 
-# Garante permissões corretas para o usuário astro acessar essa pasta depois
-#RUN python -c 'from docling.datamodel.pipeline_options import PdfPipelineOptions; \
-#               from docling.pipeline.standard_pdf_pipeline import StandardPdfPipeline; \
-#               StandardPdfPipeline(pipeline_options=PdfPipelineOptions())'
-
-RUN chown -R astro:astro /opt/docling_models
+# --- FIM DA ESTRATÉGIA OFFLINE ---
 
 USER astro
