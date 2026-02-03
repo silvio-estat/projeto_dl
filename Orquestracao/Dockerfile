@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     poppler-utils \
     tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-por \
     libtesseract-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -34,6 +36,9 @@ RUN uv pip install --system --no-cache docling torch torchvision
 ## 1. Define a variável PRIMEIRO. Quando o container rodar, o Docling lerá isso
 # e saberá que NÃO precisa tentar baixar nada da internet.
 ENV DOCLING_ARTIFACTS_PATH="/opt/docling_models"
+
+#DEFINA ESTA VARIÁVEL AQUI (Importante para o tesserocr)
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata/
 
 # 2. Copia a pasta física que está no seu projeto para dentro da imagem.
 # O comando COPY cria a pasta de destino automaticamente se ela não existir.

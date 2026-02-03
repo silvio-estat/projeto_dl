@@ -10,3 +10,8 @@ postgres_password = ""
 client_id     = ""
 client_secret = ""
 workspace_id  = ""
+
+# Credenciais do Source Airbyte - FAC2FTER
+fac2fter_host    = ""
+fac2fter_db = ""
+fac2fter_porta = 

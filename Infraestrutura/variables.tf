@@ -54,3 +54,23 @@ variable "workspace_id" {
   type        = string
   sensitive   = true
 }
+
+###############################
+## CREDENCIAIS Source Airbyte
+###############################
+
+
+variable "fac2fter_host" {
+  description = "Endereço IP ou Hostname do Banco Postgres"
+  type        = string
+}
+
+variable "fac2fter_db" {
+  description = "Nome do banco de dados (Database Name)"
+  type        = string
+}
+
+variable "fac2fter_porta" {
+  description = "Porta do banco de dados"
+  type        = number
+}
