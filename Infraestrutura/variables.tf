@@ -16,6 +16,12 @@ variable "minio_password" {
   sensitive   = true
 }
 
+variable "minio_url" {
+  description = "Endereco do MinIO"
+  type        = string
+  sensitive   = true
+}
+
 
 ###############################
 ## CREDENCIAIS Postgres
