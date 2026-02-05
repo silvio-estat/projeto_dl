@@ -7,19 +7,19 @@
 variable "minio_user" {
   description = "Usuário raiz do MinIO"
   type        = string
-  sensitive   = true
+  #sensitive   = true
 }
 
 variable "minio_password" {
   description = "Senha raiz do MinIO"
   type        = string
-  sensitive   = true
+  #sensitive   = true
 }
 
 variable "minio_url" {
   description = "Endereco do MinIO"
   type        = string
-  sensitive   = true
+  #sensitive   = true
 }
 
 
