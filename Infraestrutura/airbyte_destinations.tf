@@ -12,7 +12,7 @@ resource "airbyte_destination_custom" "minio_bronze" {
     "s3_endpoint"         : "http://172.17.0.1:9000",
     
     "s3_bucket_name"   : "bronze",
-    "s3_bucket_path"   : "$${NAMESPACE}/$${STREAM_NAME}/$${YEAR}$${MONTH}$${DAY}$${EPOCH}",
+    "s3_bucket_path"   : "dados_relacionais/FAC2FTER",
     "s3_bucket_region" : "us-east-1",
     "access_key_id"    : var.minio_user,
     "secret_access_key": var.minio_password,

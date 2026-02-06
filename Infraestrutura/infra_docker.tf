@@ -108,15 +108,56 @@ resource "minio_s3_bucket" "ouro" {
   depends_on = [time_sleep.wait_for_minio]
 }
 
-# 2. Apenas GERA o arquivo de configuração para a outra pasta
-# resource "local_file" "docker_compose_env" {
-#   filename = "${path.module}/../Plataforma_dados/.env"
-#   content  = <<-EOT
-#     # Gerado automaticamente pelo Terraform
-#     MINIO_USER=${var.minio_user}
-#     MINIO_PASSWORD=${var.minio_password}
-#     MINIO_URL=${var.minio_url}
-#     # Aqui o Terraform injeta o nome da rede que ele criou
-#     DOCKER_NETWORK_NAME=${docker_network.data_network.name}
-#   EOT
-# }
+#############################################
+###### CONFIGURANDO O PROVIDER DO QDRANT
+############################################
+
+# 1. Imagem do Qdrant
+resource "docker_image" "qdrant" {
+  name         = "qdrant/qdrant:latest"
+  keep_locally = true
+}
+
+
+# 2. Volume Gerenciado para o Qdrant (Persistência dos vetores)
+resource "docker_volume" "qdrant_storage" {
+  name = "qdrant_data_vol"
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# 3. O Container Qdrant
+resource "docker_container" "qdrant" {
+  name    = "qdrant_server"
+  image   = docker_image.qdrant.image_id
+  restart = "unless-stopped"
+
+  # Conectando à mesma rede do Data Lake ("Ilha") definida anteriormente
+  networks_advanced {
+    name = docker_network.data_network.name
+  }
+
+  # Porta da API HTTP (usada para interagir via REST ou Client Python)
+  ports {
+    internal = 6333
+    external = 6333
+  }
+
+  # Porta GRPC (usada para alta performance, opcional mas recomendada)
+  ports {
+    internal = 6334
+    external = 6334
+  }
+
+  # Montando o volume para persistir os dados em /qdrant/storage
+  volumes {
+    volume_name    = docker_volume.qdrant_storage.name
+    container_path = "/qdrant/storage"
+  }
+
+  # Variáveis de ambiente opcionais (ex: habilitar logs de debug se necessário)
+  env = [
+    "QDRANT__LOG_LEVEL=INFO"
+  ]
+}

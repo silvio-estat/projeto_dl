@@ -45,16 +45,47 @@
 # }
 
 
+# resource "airbyte_connection" "postgres_to_minio_bronze" {
+#   name            = "Sync: Postgres -> MinIO (Bronze)"
+#   source_id       = airbyte_source_postgres.postgres_source.source_id
+#   destination_id  = airbyte_destination_custom.minio_bronze.destination_id
+  
+#   # Apenas defina a frequência
+#   schedule = {
+#     schedule_type = "manual" 
+#   }
+  
+#   # REMOVA O BLOCO 'configurations' INTEIRO
+#   # Ao fazer isso, o provider entende que deve pegar o catálogo inteiro descoberto.
+# }
+
 resource "airbyte_connection" "postgres_to_minio_bronze" {
-  name            = "Sync: Postgres -> MinIO (Bronze)"
-  source_id       = airbyte_source_postgres.postgres_source.source_id
-  destination_id  = airbyte_destination_custom.minio_bronze.destination_id
+  name           = "Sync: Postgres -> MinIO (Bronze)"
+  source_id      = airbyte_source_postgres.postgres_source.source_id
+  destination_id = airbyte_destination_custom.minio_bronze.destination_id
   
-  # Apenas defina a frequência
   schedule = {
-    schedule_type = "manual" 
+    schedule_type = "manual"
   }
-  
-  # REMOVA O BLOCO 'configurations' INTEIRO
-  # Ao fazer isso, o provider entende que deve pegar o catálogo inteiro descoberto.
+
+  # Configuração Específica por Tabela
+  configurations = {
+    streams = [
+      # Tabela 1: Areas de Interesse
+      {
+        name = "areas_de_interesse"
+        sync_mode = "incremental_append"       # Lê apenas o que mudou (CDC)
+        cursor_field = [] 
+        primary_key  = [["key","operacaoID"]] 
+      },
+      
+      # Tabela 2: Camadas
+      {
+        name = "camadas"
+        sync_mode = "incremental_append"
+        cursor_field = []
+        primary_key  = [["camadaID","operacaoID"]]
+      }
+    ]
+  }
 }

@@ -1,0 +1,35 @@
+# --- GERAL (Vale para todas as pastas) ---
+# Ignorar arquivos de variáveis de ambiente (SENHAS)
+.env
+.env.*
+*.env
+
+# Ignorar ambientes virtuais Python
+.venv/
+venv/
+env/
+
+
+
+# Ignorar arquivos compilados do Python
+__pycache__/
+*.pyc
+
+# Ignorar arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# --- ESPECÍFICO: ORQUESTRACAO (Astro/Airflow) ---
+Orquestracao/.astro/
+Orquestracao/airflow_settings.yaml
+
+# --- ESPECÍFICO: INFRAESTRUTURA (Terraform/Docker) ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+
+# --- IDEs ---
+.vscode/
+.idea/
