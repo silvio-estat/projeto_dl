@@ -1,64 +1,3 @@
-# resource "airbyte_connection" "postgres_to_minio_bronze" {
-#   name = "Sync: Postgres -> MinIO (Bronze)"
-
-#   # 1. Referência à Origem (que criamos no airbyte_resources.tf)
-#   source_id = airbyte_source_postgres.postgres_source.source_id
-
-#   # 2. Referência ao Destino (que criamos na etapa anterior)
-#   destination_id = airbyte_destination_custom.minio_bronze.destination_id
-
-#   # 3. Frequência de Atualização (Schedule)
-#   # Aqui deixei como "manual" para você testar clicando, 
-#   # mas você pode mudar para "cron" se quiser automático.
-#   schedule = {
-#     schedule_type = "manual"
-#     # Exemplo para rodar a cada 24h:
-#     # schedule_type = "cron"
-#     # cron_expression = "0 0 12 * * ?" 
-#   }
-
-#   # 4. Configurações de Prefixo (Opcional)
-#   # Isso define se as tabelas no destino terão algum prefixo no nome
-#   prefix = ""
-
-#   # 5. Status inicial
-#   status = "active"
-
-#   # 6. Modo de Sincronização Padrão (Opcional, mas bom especificar)
-#   # O Airbyte tentará aplicar "Full Refresh | Overwrite" ou "Incremental | Append"
-#   # dependendo do que o banco suportar.
-#   namespace_definition = "source"
-
-
-#   # O Airbyte requer a configuração individual dos streams (tabelas) 
-#   # para definir o modo de sincronização.
-#   configurations = {
-#     streams = [
-#       {
-#         name      = "*" # Aplica a regra para todas as tabelas descobertas
-#         sync_mode = "full_refresh_overwrite"
-#         destination_sync_mode = "overwrite"
-#       }
-#     ]
-#   }
-
-# }
-
-
-# resource "airbyte_connection" "postgres_to_minio_bronze" {
-#   name            = "Sync: Postgres -> MinIO (Bronze)"
-#   source_id       = airbyte_source_postgres.postgres_source.source_id
-#   destination_id  = airbyte_destination_custom.minio_bronze.destination_id
-  
-#   # Apenas defina a frequência
-#   schedule = {
-#     schedule_type = "manual" 
-#   }
-  
-#   # REMOVA O BLOCO 'configurations' INTEIRO
-#   # Ao fazer isso, o provider entende que deve pegar o catálogo inteiro descoberto.
-# }
-
 resource "airbyte_connection" "postgres_to_minio_bronze" {
   name           = "Sync: Postgres -> MinIO (Bronze)"
   source_id      = airbyte_source_postgres.postgres_source.source_id
@@ -71,20 +10,77 @@ resource "airbyte_connection" "postgres_to_minio_bronze" {
   # Configuração Específica por Tabela
   configurations = {
     streams = [
-      # Tabela 1: Areas de Interesse
+
+      # Tabela 1: Operacoes
       {
-        name = "areas_de_interesse"
-        sync_mode = "incremental_append"       # Lê apenas o que mudou (CDC)
+        name = "operacoes"
+        #sync_mode = "incremental_append"       # Lê apenas o que mudou (CDC) - só vai dar certo depois que as tabelas estiverem preparadas para tal
+        sync_mode = "full_refresh_overwrite" 
         cursor_field = [] 
-        primary_key  = [["key","operacaoID"]] 
+        primary_key  = [["id"]] 
+      },
+
+      # Tabela 2: Posicao das forcas amigas
+      {
+        name = "posicoes_de_forcas_amigas"
+        #sync_mode = "incremental_append"      
+        sync_mode = "full_refresh_overwrite"  
+        cursor_field = [] 
+        primary_key  = [["key"]] 
       },
       
-      # Tabela 2: Camadas
+      # Tabela 3: pontos de interesse
       {
-        name = "camadas"
-        sync_mode = "incremental_append"
+        name = "pontos_de_interesse"
+        #sync_mode = "incremental_append"
+        sync_mode = "full_refresh_overwrite" 
         cursor_field = []
-        primary_key  = [["camadaID","operacaoID"]]
+        primary_key  = [["key"]]
+      },
+
+      # Tabela 4: Atribuicoes de usuarios
+      {
+        name = "atribuicoes_de_usuarios"
+        #sync_mode = "incremental_append" 
+        sync_mode = "full_refresh_overwrite"       
+        cursor_field = [] 
+        primary_key  = [["key"]]
+      },
+
+      # Tabela :5 Matriz de sincronizacao
+      {
+        name = "matriz_sincronizacao"
+        #sync_mode = "incremental_append"   
+        sync_mode = "full_refresh_overwrite"     
+        cursor_field = [] 
+        primary_key  = [["id"]]
+      },
+
+      # Tabela 6: Chats
+      {
+        name = "chats"
+        #sync_mode = "incremental_append" 
+        sync_mode = "full_refresh_overwrite"       
+        cursor_field = [] 
+        primary_key  = [["id"]]
+      },
+
+      # Tabela 7: messages
+      {
+        name = "messages"
+        #sync_mode = "incremental_append"  
+        sync_mode = "full_refresh_overwrite"      
+        cursor_field = [] 
+        primary_key  = [["messageID"]]
+      },
+
+      # Tabela 8: comentarios
+      {
+        name = "comentarios"
+        #sync_mode = "incremental_append"  
+        sync_mode = "full_refresh_overwrite"      
+        cursor_field = [] 
+        primary_key  = [["messageID"]]
       }
     ]
   }

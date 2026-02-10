@@ -48,7 +48,7 @@ def pipeline_pdf_md():
                 
         return pendentes
 
-    @task
+    @task(pool="pool_docling_serial") #para nao tirar todos os recursos da maquina e ela nao travar (esse pool foi configurado no ambiente UI)
     def converter_e_salvar(arquivo_pdf):
         """
         Baixa, converte (COM OCR EM PORTUGUÊS) e sobe o MD.
