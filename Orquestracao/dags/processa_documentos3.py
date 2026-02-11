@@ -2,7 +2,6 @@ import os
 import tempfile
 from datetime import datetime, timedelta
 from airflow.sdk import dag, task
-#from airflow.decorators import dag, task
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 # --- CONFIGURAÇÕES ---
@@ -17,7 +16,7 @@ default_args = {
 }
 
 @dag(
-    dag_id="pdf_para_markdown_docling_ocr", # Atualizei o ID para refletir a mudança
+    dag_id="pdf_para_markdown_docling_ocr2", # Atualizei o ID para refletir a mudança
     start_date=datetime(2025, 1, 1),
     schedule="@hourly",
     catchup=False,
@@ -28,30 +27,63 @@ def pipeline_pdf_md():
 
     @task
     def listar_arquivos_pendentes():
-        """
-        Lista todos os PDFs no Bronze e verifica se já existem no Prata.
-        """
-        print("🔍 Listando arquivos no MinIO...")
+        print("🔍 Listando arquivos no MinIO (Modo Caminho Completo)...")
         hook = S3Hook(aws_conn_id=CONN_ID)
+        
+        # 1. Listar chaves brutas
         arquivos_bronze = hook.list_keys(bucket_name=BUCKET_ORIGEM) or []
+        arquivos_prata = hook.list_keys(bucket_name=BUCKET_DESTINO) or []
         
-        pdfs = [f for f in arquivos_bronze if f.lower().endswith('.pdf')]
-        
-        pendentes = []
-        for pdf in pdfs:
-            nome_md = pdf.rsplit('.', 1)[0] + ".md"
-            existe = hook.check_for_key(key=nome_md, bucket_name=BUCKET_DESTINO)
+        print(f"Total de objetos no Bronze: {len(arquivos_bronze)}")
+        print(f"Total de objetos no Prata: {len(arquivos_prata)}")
+
+        # 2. Normalizar Bronze (Mantendo o caminho, removendo apenas a extensão)
+        # Ex: 'Manuais/COTER/doc1.pdf' vira 'manuais/coter/doc1'
+        set_bronze_paths = set()
+        mapa_original = {} # Para recuperar o nome com letras maiúsculas/minúsculas originais
+
+        for f in arquivos_bronze:
+            if f.lower().endswith('.pdf'):
+                # Removemos a extensão (.pdf) e forçamos minúsculo, mas MANTEMOS AS PASTAS
+                path_sem_ext = os.path.splitext(f)[0].lower()
+                set_bronze_paths.add(path_sem_ext)
+                mapa_original[path_sem_ext] = f
             
-            if not existe:
-                pendentes.append(pdf)
-                print(f"Novo arquivo encontrado: {pdf}")
-            else:
-                print(f"Arquivo já processado: {pdf}")
+        # 3. Normalizar Prata
+        set_prata_paths = set()
+        for f in arquivos_prata:
+            if f.lower().endswith('.md'):
+                # Removemos a extensão (.md) e forçamos minúsculo
+                path_sem_ext = os.path.splitext(f)[0].lower()
+                
+                # Opcional: Checagem de tamanho > 0
+                try:
+                    # Otimização: Se tiver muitos arquivos, comente o head_object para ganhar tempo
+                    # obj = hook.head_object(key=f, bucket_name=BUCKET_DESTINO)
+                    # if obj.get('ContentLength', 0) > 0:
+                    set_prata_paths.add(path_sem_ext)
+                except:
+                    pass
 
-        print(f"📋 Total de arquivos pendentes: {len(pendentes)}")    
-        return pendentes
+        # 4. Diferença de Conjuntos
+        # O que tem no Bronze (como path) que não tem no Prata (como path)
+        paths_pendentes = set_bronze_paths - set_prata_paths
+        
+        # 5. Reconstrói a lista final usando o nome original do PDF
+        lista_final = [mapa_original[p] for p in paths_pendentes]
+        
+        print(f"📉 Análise Final:")
+        print(f"   PDFs Válidos no Bronze: {len(set_bronze_paths)}")
+        print(f"   MDs Válidos no Prata: {len(set_prata_paths)}")
+        print(f"   Diferença (Pendentes): {len(lista_final)}")
+        
+        if len(lista_final) == 0:
+            print("✅ Tudo sincronizado. Se faltam arquivos, verifique se são .parquet ou se não são PDFs.")
+            
+        return lista_final
 
-    @task(pool="pool_docling_serial") #para nao tirar todos os recursos da maquina e ela nao travar (esse pool foi configurado no ambiente UI)
+    @task(pool="pool_docling_serial"
+          ) 
     def converter_e_salvar(arquivo_pdf):
         """
         Baixa, converte (COM OCR EM PORTUGUÊS) e sobe o MD.

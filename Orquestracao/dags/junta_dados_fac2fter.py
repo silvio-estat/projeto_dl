@@ -47,7 +47,60 @@ def pipeline_fac2fter():
 
         return arquivos
 
-    listar_arquivos_disponiveis()
-    
+    @task
+    def renomar_arquivos(lista_arquivos: list):
+
+        import re
+        hook = S3Hook(aws_conn_id=CONN_ID)
+        PREFIX_PRATA = "prata/dados_relacionais/FAC2FTER/"
+        movimentacoes = []
+
+        for path_completo in lista_arquivos:
+        # Garante que estamos lidando apenas com arquivos .parquet
+            if not path_completo.lower().endswith('.parquet'):
+                continue
+
+            try:
+                # 1. Extração de metadados
+                # Ex: dados_relacionais/FAC2FTER/areas_de_interesse/2026_02_10_1770729523441_0.parquet
+                parts = path_completo.split('/')
+                tabela = parts[-2]  # areas_de_interesse
+                nome_arquivo = parts[-1]
+
+                # 2. Extração e conversão do Epoch (Airbyte usa milissegundos)
+                # Buscamos o padrão numérico de 13 dígitos antes do .parquet
+                match = re.search(r'(\d{13})', nome_arquivo)
+                if match:
+                    epoch_ms = int(match.group(1))
+                    dt_obj = datetime.fromtimestamp(epoch_ms / 1000.0)
+                    timestamp_str = dt_obj.strftime('%Y%m%d_%H%M%S')
+                else:
+                    # Fallback caso o padrão de epoch mude
+                    timestamp_str = datetime.now().strftime('%Y%m%d_manual')
+
+                # 3. Definição do novo nome
+                novo_nome = f"{tabela}_{timestamp_str}.parquet"
+                novo_path = f"{PREFIX_PRATA}{novo_nome}"
+
+                # 4. Operação de movimentação no MinIO
+                # O S3Hook simplifica o Copy + Delete
+                hook.copy_object(
+                    source_bucket_key=path_completo,
+                    dest_bucket_key=novo_path,
+                    source_bucket_name=BUCKET_ORIGEM,
+                    dest_bucket_name=BUCKET_ORIGEM # Ou BUCKET_DESTINO se for diferente
+                )
+                hook.delete_objects(bucket=BUCKET_ORIGEM, keys=path_completo)
+                
+                movimentacoes.append(f"{path_completo} -> {novo_path}")
+                
+            except Exception as e:
+                print(f"Erro ao processar arquivo {path_completo}: {str(e)}")
+
+        return movimentacoes
+
+    arquivos = listar_arquivos_disponiveis()
+    renomar_arquivos(arquivos)
+
 
 pipeline = pipeline_fac2fter()
